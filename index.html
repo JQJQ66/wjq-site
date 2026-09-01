@@ -399,6 +399,74 @@
     .reveal.in { opacity: 1; transform: none; }
     .reveal.d1 { transition-delay: .08s; } .reveal.d2 { transition-delay: .16s; } .reveal.d3 { transition-delay: .24s; }
 
+    /* ============================================================
+       ENHANCED DYNAMIC EFFECTS (v0 风)
+       ============================================================ */
+    /* 点阵光晕背景 */
+    .bg-dots {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-image: radial-gradient(rgba(16,185,129,.09) 1.2px, transparent 1.2px);
+      background-size: 26px 26px;
+      -webkit-mask-image: radial-gradient(circle at 28% 8%, #000 0%, transparent 72%);
+              mask-image: radial-gradient(circle at 28% 8%, #000 0%, transparent 72%);
+    }
+
+    /* 顶部滚动进度条 */
+    #progressBar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%; z-index: 200;
+      background: linear-gradient(90deg, var(--accent), var(--sky), var(--accent));
+      background-size: 200% 100%; animation: gradientFlow 4s linear infinite;
+      box-shadow: 0 0 10px rgba(16,185,129,.5);
+    }
+
+    /* 渐变文字流动 */
+    .hero h1 .accent { background-size: 220% 220%; animation: gradientFlow 9s ease infinite; }
+    @keyframes gradientFlow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+    /* 漂浮光斑(动态) */
+    .bg-decor::before { animation: blobFloat 24s ease-in-out infinite alternate; }
+    .bg-decor::after  { animation: blobFloat 30s ease-in-out infinite alternate-reverse; }
+    .hero .avatar-blob { animation: blobSpin 18s ease-in-out infinite; }
+    .hero .avatar-wrap:hover .avatar-blob { animation-duration: 6s; }
+    @keyframes blobFloat { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-46px, 34px) scale(1.1); } }
+    @keyframes blobSpin { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg) scale(1.03); } }
+
+    /* 卡片聚光跟随 + 边缘提亮 */
+    .card.spotlight::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      opacity: 0; transition: opacity .3s; z-index: 0;
+      background: radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(16,185,129,.16), transparent 62%);
+    }
+    .card.spotlight:hover::after { opacity: 1; }
+    .card.spotlight:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+
+    /* 按钮扫光 */
+    .btn-primary, .btn-accent { position: relative; overflow: hidden; }
+    .btn-primary::after, .btn-accent::after {
+      content:""; position:absolute; top:0; left:-120%; width:55%; height:100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.42), transparent);
+      transform: skewX(-20deg);
+    }
+    .btn-primary:hover::after, .btn-accent:hover::after { animation: shine .7s ease; }
+    @keyframes shine { to { left: 135%; } }
+
+    /* 控制台标签滑动指示条 */
+    .console-tabs { position: relative; }
+    .console-tab-indicator {
+      position: absolute; bottom: 0; left: 0; height: 3px; width: 0;
+      background: var(--mint); border-radius: 999px; transition: left .3s ease, width .3s ease;
+      box-shadow: 0 0 8px rgba(52,211,153,.7);
+    }
+    .console-tab { cursor: pointer; user-select: none; transition: color .2s; }
+
+    /* 统计数字区块 */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; padding-top: 36px; border-top: 1px solid var(--border); }
+    .stat { text-align: center; }
+    .stat .num { font-family: var(--font-mono); font-size: clamp(34px, 5.4vw, 50px); font-weight: 700; letter-spacing: -.02em;
+      background: linear-gradient(120deg, var(--accent), var(--sky)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .stat .lbl { color: var(--text-muted); font-size: 14px; margin-top: 8px; letter-spacing: .02em; }
+    @media (max-width: 560px) { .stats { grid-template-columns: 1fr; gap: 26px; } }
+
     @media (max-width: 640px) {
       .hero h1 { font-size: 42px; }
       .float-card.a { left: -4%; } .float-card.b { right: -2%; }
@@ -408,6 +476,8 @@
 <body>
 
   <div class="bg-decor"></div>
+  <div class="bg-dots"></div>
+  <div id="progressBar"></div>
 
   <!-- ================= NAV ================= -->
   <header class="nav">
@@ -515,6 +585,12 @@
           <p>写代码，以及那个陪我一路长大的女孩。前者让我感觉自己在创造，后者让我感觉在生活。</p>
         </div>
       </div>
+
+      <div class="stats reveal" id="stats">
+        <div class="stat"><div class="num" data-count="48" data-suffix="+">0+</div><div class="lbl">灵感已落地</div></div>
+        <div class="stat"><div class="num" data-count="12" data-suffix="+">0+</div><div class="lbl">项目在折腾</div></div>
+        <div class="stat"><div class="num" data-count="100" data-suffix="%">0%</div><div class="lbl">VIBE 热情</div></div>
+      </div>
     </div>
   </section>
 
@@ -556,6 +632,7 @@
           <div class="console-tab on">idea.prompt</div>
           <div class="console-tab">build.log</div>
           <div class="console-tab">deploy.json</div>
+          <div class="console-tab-indicator" id="tabInd"></div>
         </div>
         <div class="console-grid">
           <div class="console-panel">
@@ -570,7 +647,7 @@
           </div>
           <div class="console-panel">
             <div class="ph"><span>构建状态</span><span>LIVE</span></div>
-            <div class="metric" style="margin-bottom:10px;"><span class="m-label">创意生成</span><span class="m-val">100%</span></div>
+            <div class="metric" style="margin-bottom:10px;"><span class="m-label">创意生成</span><span class="m-val" data-count="100" data-suffix="%">0%</span></div>
             <div class="progress"><i></i></div>
             <div style="margin-top:14px;" class="metric"><span class="m-label">开心指数</span><span class="m-val">∞</span></div>
             <div style="margin-top:10px;" class="metric"><span class="m-label">Deploy</span><span class="m-val" style="color:#fbbf24;">shipping…</span></div>
@@ -739,6 +816,58 @@
       }, 26);
     }
     typeLine();
+
+    // 顶部滚动进度条
+    const pb = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const h = document.documentElement;
+      const sc = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+      pb.style.width = (sc || 0) + '%';
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // 控制台标签滑动指示条
+    const tabs = [...document.querySelectorAll('.console-tab')];
+    const tabInd = document.getElementById('tabInd');
+    const moveInd = (tab) => { tabInd.style.left = tab.offsetLeft + 'px'; tabInd.style.width = tab.offsetWidth + 'px'; };
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+      moveInd(t);
+    }));
+    const initTab = () => { const on = document.querySelector('.console-tab.on'); if (on && tabInd) moveInd(on); };
+    window.addEventListener('load', initTab);
+    if (document.readyState === 'complete') initTab();
+
+    // 数字滚动统计
+    const runCount = (el) => {
+      const target = parseFloat(el.dataset.count || '0');
+      const suffix = el.dataset.suffix || '';
+      const dur = 1500, t0 = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(step); else el.textContent = target + suffix;
+      };
+      requestAnimationFrame(step);
+    };
+    const countIO = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { runCount(e.target); countIO.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('[data-count]').forEach(el => countIO.observe(el));
+
+    // 卡片聚光跟随
+    document.querySelectorAll('.card').forEach(card => {
+      card.classList.add('spotlight');
+      card.classList.add('card-js');
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
   </script>
 </body>
 </html>
