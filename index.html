@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>王旌旗 · 我的 VIBE 世界</title>
+  <meta name="description" content="王旌旗 — 青岛科技大学 · VIBE CODING 爱好者。一个把灵感 Build & Ship 成现实的个人网站。" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="王旌旗 · 我的 VIBE 世界" />
+  <meta property="og:description" content="青岛科技大学 · VIBE CODING 爱好者。把灵感 Build & Ship 成现实。" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — 清新风 + tech 点缀
+       ============================================================ */
+    :root {
+      /* 底色 */
+      --bg: #f7f9f8;
+      --bg-soft: #eef3f1;
+      --surface: #ffffff;
+      --surface-2: #ffffff;
+
+      /* 文字 */
+      --text: #1b2420;
+      --text-muted: #5d6b63;
+      --text-faint: #8a978f;
+
+      /* 主强调色 — 清新薄荷绿 */
+      --accent: #10b981;        /* emerald */
+      --accent-deep: #0b8a63;
+      --accent-soft: #d1fae5;   /* 浅薄荷 */
+      --mint: #34d399;
+
+      /* 辅助色 */
+      --sky: #38bdf8;
+      --sky-soft: #e0f2fe;
+      --rose: #fb7185;
+      --rose-soft: #ffe4e6;
+
+      /* 深色终端面板 */
+      --ui-bg: #101720;
+      --ui-line: #1e293b;
+      --ui-text: #cbd5e1;
+
+      /* 结构 */
+      --border: #e5ebe8;
+      --border-strong: #d6e0dc;
+      --ring: rgba(16, 185, 129, 0.28);
+      --shadow-sm: 0 1px 2px rgba(16, 34, 27, 0.05);
+      --shadow-md: 0 8px 30px rgba(16, 34, 27, 0.08);
+      --shadow-lg: 0 20px 60px rgba(16, 34, 27, 0.12);
+
+      --radius-sm: 10px;
+      --radius: 16px;
+      --radius-lg: 24px;
+
+      --font-sans: "Inter", "Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+      --container: 1120px;
+    }
+
+    /* ============================================================
+       RESET / BASE
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--accent); color: #fff; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ============================================================
+       BACKGROUND BLOBS (清新光晕)
+       ============================================================ */
+    .bg-decor { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .bg-decor::before,
+    .bg-decor::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5;
+    }
+    .bg-decor::before {
+      width: 620px; height: 620px; top: -160px; right: -120px;
+      background: radial-gradient(circle, #bbf7d0, transparent 70%);
+    }
+    .bg-decor::after {
+      width: 560px; height: 560px; bottom: -160px; left: -140px;
+      background: radial-gradient(circle, #dbeafe, transparent 70%);
+    }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: 24px; }
+    .section { padding-block: 96px; }
+    @media (max-width: 640px) { .section { padding-block: 64px; } }
+
+    /* ============================================================
+       NAV
+       ============================================================ */
+    header.nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(140%) blur(14px);
+      background: rgba(247, 249, 248, 0.72);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .5px; }
+    .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--sky)); box-shadow: 0 0 0 4px var(--accent-soft); }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--text-muted);
+      padding: 8px 14px; border-radius: 999px; transition: .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--bg-soft); }
+    .nav-links a.active { color: var(--accent-deep); background: var(--accent-soft); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 600; color: #fff;
+      background: var(--text); padding: 9px 18px; border-radius: 999px; transition: .2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+    .menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text); padding: 8px; }
+    @media (max-width: 820px) {
+      .nav-links { display: none; }
+      .menu-btn { display: inline-flex; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--surface); padding: 16px; border-bottom: 1px solid var(--border); gap: 4px; }
+      .nav-links.open a { padding: 12px; }
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-weight: 600; font-size: 15px; padding: 13px 22px; border-radius: 999px;
+      transition: .2s; border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+    }
+    .btn-primary { background: var(--text); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-accent { background: linear-gradient(135deg, var(--accent), var(--mint)); color: #fff; box-shadow: 0 6px 20px rgba(16,185,129,.28); }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(16,185,129,.38); }
+    .btn-outline { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+
+    /* ============================================================
+       EYEBROW / HEADINGS
+       ============================================================ */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent-deep); background: var(--accent-soft);
+      padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
+    }
+    .eyebrow::before { content: "●"; font-size: 8px; }
+    .eyebrow.rose { color: #e11d48; background: var(--rose-soft); }
+    .eyebrow.sky { color: #0284c7; background: var(--sky-soft); }
+    h2.section-title { font-size: clamp(28px, 4.2vw, 44px); font-weight: 800; line-height: 1.18; letter-spacing: -.02em; }
+    .section-head { max-width: 640px; margin-bottom: 48px; }
+    .section-head p { color: var(--text-muted); margin-top: 14px; font-size: 17px; }
+    .section-head.center { margin-inline: auto; text-align: center; }
+    .section-head.center .eyebrow { margin-inline: auto; }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero { min-height: calc(100vh - 64px); display: flex; align-items: center; padding-block: 60px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      padding: 7px 14px 7px 8px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 24px;
+    }
+    .hero-badge .pulse { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid #fff; box-shadow: var(--shadow-sm); }
+    .hero-badge .pulse img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-badge .status { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+    .hero h1 {
+      font-size: clamp(44px, 7vw, 78px); font-weight: 900; line-height: 1.05; letter-spacing: -.03em; margin-bottom: 12px;
+    }
+    .hero h1 .accent {
+      background: linear-gradient(120deg, var(--accent) 10%, var(--sky) 90%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero .sub { font-size: clamp(17px, 2.4vw, 21px); color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+    .hero .desc { color: var(--text-muted); max-width: 480px; margin-top: 16px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; color: var(--text-muted);
+    }
+    .chip svg { color: var(--accent); }
+
+    /* Avatar (hero right) */
+    .avatar-wrap { position: relative; width: min(100%, 380px); margin-inline: auto; }
+    .avatar {
+      aspect-ratio: 4/5; border-radius: var(--radius-lg); overflow: hidden; position: relative; z-index: 2;
+      box-shadow: var(--shadow-lg); border: 5px solid #fff;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+    .avatar-blob {
+      position: absolute; inset: -22px; z-index: 1; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--accent-soft), var(--sky-soft));
+      transform: rotate(-4deg);
+    }
+    .float-card {
+      position: absolute; z-index: 3; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 14px; box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; animation: float 5s ease-in-out infinite;
+    }
+    .float-card small { display:block; font-size: 11px; color: var(--text-faint); font-weight: 500; }
+    .float-card.a { top: 10%; left: -14%; }
+    .float-card.b { bottom: 8%; right: -8%; animation-delay: -2.5s; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @media (max-width: 900px) {
+      .avatar { max-width: 320px; margin-inline: auto; }
+    }
+
+    /* Terminal mockup */
+    .terminal {
+      margin-top: 56px; border-radius: var(--radius); overflow: hidden; background: var(--ui-bg);
+      box-shadow: var(--shadow-lg); border: 1px solid var(--ui-line); position: relative;
+    }
+    .term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #0b1118; border-bottom: 1px solid var(--ui-line); }
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .term-dot.r { background: #ff5f57; } .term-dot.y { background: #febc2e; } .term-dot.g { background: #28c840; }
+    .term-title { margin-left: 10px; font-family: var(--font-mono); font-size: 12px; color: #64748b; }
+    .term-body { padding: 22px 22px 26px; font-family: var(--font-mono); font-size: 14px; line-height: 1.85; white-space: pre-wrap; }
+    .term-cmd { color: #e2e8f0; }
+    .term-cmd .p { color: var(--mint); }
+    .term-cmd .c { color: #94a3b8; }
+    .term-out { color: #94a3b8; }
+    .term-out .ok { color: var(--mint); }
+    .term-out .hl { color: #fbbf24; }
+    .cursor { display: inline-block; width: 9px; height: 18px; background: var(--mint); vertical-align: middle; animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ============================================================
+       MARQUEE (tech 点缀)
+       ============================================================ */
+    .marquee { overflow: hidden; border-block: 1px solid var(--border); background: var(--bg-soft); padding: 16px 0; }
+    .marquee-track { display: flex; gap: 48px; width: max-content; animation: marquee 30s linear infinite; }
+    .marquee span { font-family: var(--font-mono); font-size: 14px; color: var(--text-faint); white-space: nowrap; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* ============================================================
+       CARDS / GRID
+       ============================================================ */
+    .grid { display: grid; gap: 22px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 800px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; position: relative; transition: .25s; overflow: hidden;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+    .card .icon {
+      width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 18px; font-size: 22px;
+    }
+    .icon.emerald { background: var(--accent-soft); }
+    .icon.sky { background: var(--sky-soft); }
+    .icon.rose { background: var(--rose-soft); }
+    .icon.violet { background: #ede9fe; }
+    .card h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+    .card p { color: var(--text-muted); font-size: 15px; }
+    .card-tag {
+      position: absolute; top: 20px; right: 20px; font-size: 11px; font-weight: 600; letter-spacing: .05em;
+      color: var(--accent-deep); background: var(--accent-soft); padding: 4px 9px; border-radius: 999px;
+    }
+
+    /* ============================================================
+       STUDIO SECTION (COMPUTE-inspired, dark slate band)
+       ============================================================ */
+    .studio { background: #0b1118; color: #e2e8f0; position: relative; overflow: hidden; }
+    .studio::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(600px circle at 20% 0%, rgba(16,185,129,.14), transparent 60%),
+                  radial-gradient(600px circle at 90% 100%, rgba(56,189,248,.12), transparent 60%);
+    }
+    .studio .section-title { color: #fff; }
+    .studio .section-head p { color: #94a3b8; }
+    .studio .eyebrow { color: var(--mint); background: rgba(52,211,153,.14); }
+    .studio .eyebrow::before { content: "●"; font-size: 8px; }
+
+    .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    @media (max-width: 820px) { .studio-grid { grid-template-columns: 1fr; } }
+    .studio .card { background: #111a24; border-color: #1e293b; color: #e2e8f0; }
+    .studio .card:hover { border-color: #334155; }
+    .studio .card p { color: #94a3b8; }
+    .studio .card .icon { background: rgba(52,211,153,.12); }
+
+    .studio-console {
+      margin-top: 44px; border-radius: var(--radius); overflow: visible; background: #0e1620;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    .console-tabs { display: flex; gap: 6px; padding: 14px 18px 0; background: #0b1118; border-radius: var(--radius) var(--radius) 0 0; }
+    .console-tab { font-family: var(--font-mono); font-size: 12px; color: #64748b; padding: 8px 14px; border-radius: 10px 10px 0 0; }
+    .console-tab.on { background: #111a24; color: var(--mint); }
+    .console-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 22px; background: #111a24; border-radius: 0 0 var(--radius) var(--radius); }
+    @media (max-width: 640px) { .console-grid { grid-template-columns: 1fr; } }
+    .console-panel { background: #0b1118; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; }
+    .console-panel .ph { font-family: var(--font-mono); font-size: 12px; color: #475569; margin-bottom: 12px; display:flex; justify-content:space-between; }
+    .code { font-family: var(--font-mono); font-size: 13px; line-height: 1.9; color: #94a3b8; }
+    .code .k { color: #c084fc; } .code .v { color: #93c5fd; } .code .s { color: var(--mint); } .code .f { color: #fbbf24; } .code .p { color: #475569; }
+    .metric { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: #0b1118; border: 1px solid #1e293b; border-radius: 10px; }
+    .metric .m-label { font-size: 13px; color: #64748b; } .metric .m-val { font-family: var(--font-mono); font-size: 14px; color: var(--mint); }
+    .progress { height: 6px; background: #1e293b; border-radius: 999px; overflow: hidden; margin-top: 6px; }
+    .progress i { display: block; height: 100%; width: 78%; background: linear-gradient(90deg, var(--accent), var(--sky)); border-radius: 999px; }
+
+    /* ============================================================
+       PROJECTS
+       ============================================================ */
+    .project-card { display: flex; flex-direction: column; }
+    .project-thumb {
+      aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 18px; position: relative;
+    }
+    .project-thumb.g1 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+    .project-thumb.g2 { background: linear-gradient(135deg, #e0f2fe, #bae6fd); }
+    .project-thumb.g3 { background: linear-gradient(135deg, #ffe4e6, #fecdd3); }
+    .project-thumb .pin { position: absolute; inset: 0; display: grid; place-items: center; font-size: 34px; }
+    .project-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 12px; }
+    .pill { font-size: 12px; font-weight: 600; color: var(--text-muted); background: var(--bg-soft); padding: 4px 10px; border-radius: 999px; }
+    .project-card .card-body { flex: 1; display: flex; flex-direction: column; }
+    .project-card .card-body .link { margin-top: auto; padding-top: 12px; font-weight: 600; color: var(--accent-deep); font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+    .link-card { text-align: center; }
+    .link-card .icon { margin-inline: auto; }
+    .icon-gh { background: var(--text); color: #fff; font-weight: 800; font-family: var(--font-mono); font-size: 20px; letter-spacing: -0.02em; }
+    .icon-bili { background: var(--sky-soft); }
+    .link-card .go { margin-top: 16px; font-weight: 600; color: var(--accent-deep); font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+    .link-card:hover .go { text-decoration: underline; }
+
+    /* ============================================================
+       COUPLE / LOVE SECTION
+       ============================================================ */
+    .love { background: linear-gradient(180deg, #fff7f7, #fff); }
+    .love-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    @media (max-width: 820px) { .love-grid { grid-template-columns: 1fr; } }
+    .love-photo { position: relative; }
+    .love-photo .frame {
+      border-radius: var(--radius-lg); overflow: hidden; border: 6px solid #fff; box-shadow: var(--shadow-lg); transform: rotate(-1.5deg);
+    }
+    .love-photo .frame img { aspect-ratio: 4/5; object-fit: cover; }
+    .love-photo .heart { position: absolute; z-index: 2; color: var(--rose); font-size: 26px; text-shadow: 0 2px 8px rgba(251,113,133,.4); }
+    .love-photo .heart.h1 { top: -16px; right: -8px; }
+    .love-photo .heart.h2 { bottom: 14px; left: -16px; font-size: 20px; }
+    .love-quote { font-size: 20px; font-weight: 500; line-height: 1.7; color: var(--text); margin-bottom: 24px; }
+    .love-quote b { color: #e11d48; }
+    .love-facts { display: grid; gap: 14px; }
+    .love-fact { display: flex; gap: 12px; align-items: flex-start; }
+    .love-fact .emoji { font-size: 20px; margin-top: 2px; }
+    .love-fact div { color: var(--text-muted); font-size: 15px; }
+
+    /* ============================================================
+       CTA + FOOTER
+       ============================================================ */
+    .cta-band { background: var(--text); border-radius: var(--radius-lg); padding: 52px; color: #fff; text-align: center; position: relative; overflow: hidden; }
+    .cta-band::before { content:""; position:absolute; inset:0; background: radial-gradient(400px circle at 15% 20%, rgba(16,185,129,.25), transparent 60%), radial-gradient(400px circle at 85% 80%, rgba(56,189,248,.2), transparent 60%); }
+    .cta-band h2 { position: relative; font-size: clamp(24px, 4vw, 38px); font-weight: 800; letter-spacing: -.02em; margin-bottom: 14px; }
+    .cta-band p { position: relative; color: #94a3b8; max-width: 520px; margin: 0 auto 26px; }
+    .cta-band .btn { position: relative; }
+
+    footer { padding: 48px 0 40px; border-top: 1px solid var(--border); }
+    .foot-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    .foot-brand { max-width: 300px; }
+    .foot-brand .logo { margin-bottom: 12px; }
+    .foot-brand p { color: var(--text-muted); font-size: 14px; }
+    .foot-links { display: flex; gap: 48px; flex-wrap: wrap; }
+    .foot-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); margin-bottom: 12px; }
+    .foot-col a { display: block; color: var(--text-muted); font-size: 14px; padding: 5px 0; transition: .2s; }
+    .foot-col a:hover { color: var(--accent-deep); }
+    .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; border-top: 1px solid var(--border); padding-top: 24px; color: var(--text-faint); font-size: 13px; }
+    .foot-bottom .mono { font-family: var(--font-mono); }
+    .socials { display: flex; gap: 10px; }
+    .socials a { width: 38px; height: 38px; border-radius: 10px; background: var(--bg-soft); display: grid; place-items: center; transition: .2s; }
+    .socials a:hover { background: var(--accent-soft); color: var(--accent-deep); transform: translateY(-2px); }
+
+    /* ============================================================
+       SCROLL REVEAL
+       ============================================================ */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: .08s; } .reveal.d2 { transition-delay: .16s; } .reveal.d3 { transition-delay: .24s; }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 42px; }
+      .float-card.a { left: -4%; } .float-card.b { right: -2%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-decor"></div>
+
+  <!-- ================= NAV ================= -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="logo"><span class="dot"></span>王旌旗</a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#top" class="active">首页</a>
+        <a href="#about">认识我</a>
+        <a href="#studio">VIBE 工作室</a>
+        <a href="#links">找到我</a>
+        <a href="#love">我们</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <a href="#contact" class="nav-cta">联系我 <span aria-hidden="true">→</span></a>
+        <button class="menu-btn" id="menuBtn" aria-label="菜单">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <a id="top"></a>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="hero-badge reveal in">
+          <span class="pulse"><img src="profile.jpg" alt="王旌旗" /></span>
+          <span class="status"></span>
+          在线 · 随时准备接受灵感
+        </div>
+        <h1 class="reveal in d1">你好，我是<br /><span class="accent">王旌旗</span></h1>
+        <p class="sub reveal in d2">青岛科技大学 · VIBE CODING 爱好者</p>
+        <p class="desc reveal in d2">
+          比起循规蹈矩地敲代码，我更相信「感觉」。灵感来了就动手，写不下去就放一放。
+          这就是我理解的 VIBE CODING —— 让想法跟着心情流淌,而不是被语法框死。
+        </p>
+        <div class="hero-actions reveal in d3">
+          <a href="#studio" class="btn btn-accent">进入我的 VIBE 世界 <span aria-hidden="true">↓</span></a>
+          <a href="#love" class="btn btn-outline">看看我和她 🧡</a>
+        </div>
+        <div class="hero-meta reveal in d3">
+          <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26L21 9.27l-4.5 4.38L17.8 21 12 17.77 6.2 21l1.3-7.35L3 9.27l6.1-1.01z"/></svg>Build &amp; Ship</span>
+          <span class="chip">🛠 VIBE CODING</span>
+          <span class="chip">🎓 青岛科技大学</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="avatar-wrap reveal in d1">
+          <div class="avatar-blob"></div>
+          <div class="avatar"><img src="profile.jpg" alt="王旌旗的头像" /></div>
+          <div class="float-card a">⚡ 灵感模块<small>const vibe = "on"</small></div>
+          <div class="float-card b">🔒 开心模式<small>已持续 9227 天</small></div>
+        </div>
+
+        <!-- Terminal mockup (COMPUTE 风格) -->
+        <div class="terminal reveal in d2">
+          <div class="term-bar">
+            <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+            <span class="term-title">wjq — vibe-studio — zsh</span>
+          </div>
+          <div class="term-body" id="termBody">
+            <div><span class="term-cmd"><span class="p">❯</span> <span class="c">vibe deploy</span> --mood=good</span></div>
+            <div class="term-out">Compiling brainwave... <span class="ok">✓ done</span></div>
+            <div class="term-out">Bundling ideas → <span class="hl">1,000,000</span> tokens/sec</div>
+            <div class="term-out"><span class="ok">[deploy]</span> 我的个人网站已上线 🚀<span class="cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MARQUEE ================= -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span># VIBE CODING</span><span># build &amp; ship</span><span># AI Agents</span><span># 青岛科技大学</span><span># 灵感驱动</span><span># 前端 / 全栈</span><span># 快乐写代码</span>
+      <span># VIBE CODING</span><span># build &amp; ship</span><span># AI Agents</span><span># 青岛科技大学</span><span># 灵感驱动</span><span># 前端 / 全栈</span><span># 快乐写代码</span>
+    </div>
+  </div>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow">About me</span>
+        <h2 class="section-title">认识一下，那个爱折腾的人</h2>
+        <p>一个在青岛科技大学里，一边上学、一边用代码把脑袋里的点子变成真东西的学生。</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card reveal">
+          <div class="icon emerald">🎓</div>
+          <h3>我是谁</h3>
+          <p>王旌旗，青岛科技大学在校生。喜欢一件事的纯粹动机往往是「这挺好玩的」。</p>
+        </div>
+        <div class="card reveal d1">
+          <div class="icon sky">🛠</div>
+          <h3>我在干嘛</h3>
+          <p>用 VIBE CODING 的方式做小玩意儿：让 AI 当我的搭档，我负责出主意、拍板、把感觉变成产品。</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="icon violet">🧡</div>
+          <h3>我热爱的事</h3>
+          <p>写代码，以及那个陪我一路长大的女孩。前者让我感觉自己在创造，后者让我感觉在生活。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STUDIO (COMPUTE-INSPIRED) ================= -->
+  <section class="section studio" id="studio">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">VIBE Studio · Build &amp; Ship</span>
+        <h2 class="section-title">把灵感，一键 Build &amp; Ship 成现实</h2>
+        <p>我像一个小而全的「AI Agent 平台」一样运转：一个灵感进来，经过拆解、迭代、调试，最终部署上线。每个小项目，都是一次完整的构建与交付。</p>
+      </div>
+
+      <div class="studio-grid">
+        <div class="card reveal">
+          <div class="icon">⚡</div>
+          <h3>灵感到代码</h3>
+          <p>从一句「我想要」开始，把抽象的火花拆成能跑的模块，快速落地成一个雏形。</p>
+        </div>
+        <div class="card reveal d1">
+          <div class="icon">🤖</div>
+          <h3>AI 协作者</h3>
+          <p>和 AI Agent 结对编程。我定方向、做取舍，它负责那些重复又耗神的敲代码环节。</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="icon">🧪</div>
+          <h3>沙盒里试错</h3>
+          <p>在一个安全的小世界里随便折腾：坏了就重启重来，没有心理负担，放心大胆地试。</p>
+        </div>
+        <div class="card reveal d3">
+          <div class="icon">🚀</div>
+          <h3>一键上线</h3>
+          <p>折腾完的成果，快速打包、部署、分享出去，让身边的人也真正用到。</p>
+        </div>
+      </div>
+
+      <!-- console panel -->
+      <div class="studio-console reveal">
+        <div class="console-tabs">
+          <div class="console-tab on">idea.prompt</div>
+          <div class="console-tab">build.log</div>
+          <div class="console-tab">deploy.json</div>
+        </div>
+        <div class="console-grid">
+          <div class="console-panel">
+            <div class="ph"><span>灵感输入</span><span>v2.4</span></div>
+            <div class="code">
+<span class="p">// 我每天的工作台</span>
+<span class="k">const</span> <span class="v">pipeline</span> = [<span class="s">'灵感到来'</span>, <span class="s">'拆解任务'</span>, <span class="s">'AI 协作'</span>, <span class="s">'调试打磨'</span>, <span class="s">'Deploy 🚀'</span>];
+
+<span class="k">await</span> <span class="f">run</span>(<span class="v">pipeline</span>);
+<span class="p">// → every idea becomes real</span>
+            </div>
+          </div>
+          <div class="console-panel">
+            <div class="ph"><span>构建状态</span><span>LIVE</span></div>
+            <div class="metric" style="margin-bottom:10px;"><span class="m-label">创意生成</span><span class="m-val">100%</span></div>
+            <div class="progress"><i></i></div>
+            <div style="margin-top:14px;" class="metric"><span class="m-label">开心指数</span><span class="m-val">∞</span></div>
+            <div style="margin-top:10px;" class="metric"><span class="m-label">Deploy</span><span class="m-val" style="color:#fbbf24;">shipping…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FIND ME / LINKS ================= -->
+  <section class="section" id="links">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow sky">Find me</span>
+        <h2 class="section-title">来这些地方找到我</h2>
+        <p>我的代码、我的记录、我的视频，都放在这里。</p>
+      </div>
+
+      <div class="grid grid-2" style="max-width:780px;margin-inline:auto;">
+        <a class="card link-card reveal" href="https://github.com/JQJQ66" target="_blank" rel="noopener">
+          <div class="icon icon-gh">GH</div>
+          <h3>GitHub</h3>
+          <p>@JQJQ66 · 我的代码仓库，那些折腾出来的小玩意儿都躺在这。</p>
+          <span class="go">去看看我的仓库 ↗</span>
+        </a>
+
+        <a class="card link-card reveal d1" href="https://space.bilibili.com/509655552" target="_blank" rel="noopener">
+          <div class="icon icon-bili">📺</div>
+          <h3>B 站主页</h3>
+          <p>我的 Bilibili 账号 · 用 VIBE 记录生活，偶尔发发视频。</p>
+          <span class="go">去 B 站找我 ↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOVE / COUPLE ================= -->
+  <section class="section love" id="love">
+    <div class="container love-grid">
+      <div class="love-photo reveal">
+        <div class="frame"><img src="us.jpg" alt="我和我的女朋友" /></div>
+        <span class="heart h1">❤️</span>
+        <span class="heart h2">💛</span>
+      </div>
+      <div>
+        <div class="section-head" style="margin-bottom:20px;">
+          <span class="eyebrow rose">Her &amp; Me</span>
+          <h2 class="section-title">代码是我的热爱,而她是我的世界</h2>
+        </div>
+        <p class="love-quote">
+          「如果说 VIBE CODING 让我学会了随心创造,那她教会我的,是<strong>为什么</strong>要创造。
+          愿我们像一对稳定的版本——<strong>永远兼容,永远向前</strong>,每次升级都做彼此最好的搭档。」
+        </p>
+        <div class="love-facts">
+          <div class="love-fact"><span class="emoji">✨</span><div>有人问为什么写代码这么开心，大概是因为有一件更棒的事在等我回家。</div></div>
+          <div class="love-fact"><span class="emoji">🔐</span><div>她是我人生的「沙盒」——在彼此身边，可以安心做个不完美的小孩。</div></div>
+          <div class="love-fact"><span class="emoji">🚢</span><div>一路 build,一路 ship，我们的故事也在持续 deploy。</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section" id="contact" style="padding-top:8px;">
+    <div class="container">
+      <div class="cta-band reveal">
+        <h2>要不要一起,做个好玩的东西?</h2>
+        <p>无论你是想聊聊 VIBE CODING、合作一个小项目,还是只想说声「加油」——都欢迎随时找我。</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;">
+          <a href="https://github.com/JQJQ66" target="_blank" rel="noopener" class="btn btn-accent">🐙 我的 GitHub</a>
+          <a href="https://space.bilibili.com/509655552" target="_blank" rel="noopener" class="btn" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);">📺 我的 B 站</a>
+          <a href="#top" class="btn" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);">回到顶部 ↑</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="container">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a href="#top" class="logo"><span class="dot"></span>王旌旗</a>
+          <p>青岛科技大学 · VIBE CODING 爱好者。把灵感 Build &amp; Ship 成现实，偶尔也把浪漫写成一行注释。</p>
+          <div class="socials" style="margin-top:16px;">
+            <a href="https://github.com/JQJQ66" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1 1.9-.9 2-.9-.1-.7-.4-1.1-.7-1.4-2.3.3-4.8-.7-4.8-3.2 0-.7.4-1.3.5-1.6-.4-.6-.5-1.1-.3-1.6 0 0 .6-.4 1.6.5.6-.6 1.7-.5 1.9-.5.4.2-.1 1.2-.1 1.2.6.7-.2 2.5.6 3.5.7.3 1.4.4 2.1.4.7 0 1.4-.1 2-.4v1.5c0 .4.2.7.8.6A10.9 10.9 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+            <a href="https://space.bilibili.com/509655552" target="_blank" rel="noopener" title="B 站" aria-label="B 站"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="6" width="18" height="13" rx="3"/><rect x="7" y="3" width="2.4" height="4" rx="1.2"/><rect x="14.6" y="3" width="2.4" height="4" rx="1.2"/><circle cx="9" cy="12" r="1.5" fill="#fff"/><circle cx="15" cy="12" r="1.5" fill="#fff"/></svg></a>
+          </div>
+        </div>
+        <div class="foot-links">
+          <div class="foot-col">
+            <h4>探索</h4>
+            <a href="#about">认识我</a>
+            <a href="#studio">VIBE 工作室</a>
+            <a href="#links">找到我</a>
+            <a href="#love">我们</a>
+          </div>
+          <div class="foot-col">
+            <h4>关于</h4>
+            <a href="#contact">联系我</a>
+            <a href="https://github.com/JQJQ66" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://space.bilibili.com/509655552" target="_blank" rel="noopener">B 站主页</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 王旌旗 · 青岛科技大学</span>
+        <span class="mono">&lt;built with vibe /&gt;  ·  Made with 🧡 by wjq</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 移动端菜单
+    const menuBtn = document.getElementById('menuBtn');
+    const navLinks = document.getElementById('navLinks');
+    menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+    // 导航高亮当前章节
+    const sections = document.querySelectorAll('section[id], a[id="top"]');
+    const navItems = navLinks.querySelectorAll('a');
+    const onScroll = () => {
+      const pos = window.scrollY + 120;
+      sections.forEach(sec => {
+        const top = sec.offsetTop, bottom = top + sec.offsetHeight;
+        if (pos >= top && pos < bottom) {
+          const id = '#' + sec.id;
+          navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+        }
+      });
+    };
+    window.addEventListener('scroll', onScroll);
+
+    // 滚动显现
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // 终端打字动画
+    const termBody = document.getElementById('termBody');
+    const lines = [
+      { type: 'cmd', html: '<span class="p">❯</span> <span class="c">vibe deploy</span> --mood=good' },
+      { type: 'out', html: 'Compiling brainwave... <span class="ok">✓ done</span>' },
+      { type: 'out', html: 'Bundling ideas → <span class="hl">1,000,000</span> tokens/sec' },
+      { type: 'out', html: '<span class="ok">[deploy]</span> 我的个人网站已上线 🚀' },
+    ];
+    termBody.innerHTML = '';
+    let li = 0;
+    function typeLine() {
+      if (li >= lines.length) {
+        const cur = termBody.querySelector('.term-out:last-child');
+        if (cur) cur.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
+        return;
+      }
+      const data = lines[li];
+      const div = document.createElement('div');
+      div.className = data.type === 'cmd' ? 'term-cmd' : 'term-out';
+      termBody.appendChild(div);
+      const html = data.html;
+      let i = 0;
+      const timer = setInterval(() => {
+        div.innerHTML = html.slice(0, i) + '<span class="cursor"></span>';
+        i++;
+        if (i > html.length) { clearInterval(timer); div.innerHTML = html; li++; setTimeout(typeLine, 320); }
+      }, 26);
+    }
+    typeLine();
+  </script>
+</body>
+</html>
